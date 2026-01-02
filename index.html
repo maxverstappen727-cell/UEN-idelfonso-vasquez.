@@ -4,31 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Colegio Ildefonso Vázquez</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script src="https://unpkg.com/lucide@latest"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <link rel="stylesheet" href="styles.css">
-    
     <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
-    
     <meta name="theme-color" content="#1e40af">
     <meta name="description" content="Plataforma educativa del Colegio Ildefonso Vázquez">
-    
-    <style>
-        /* Variables CSS dinámicas */
-        :root {
-            --primary: #1e40af;
-            --secondary: #dc2626;
-            --background: #f9fafb;
-            --text: #1f2937;
-            --card: #ffffff;
-            --border: #e5e7eb;
-        }
-    </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white font-sans transition-colors duration-300">
     
@@ -37,9 +19,9 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex items-center space-x-3">
-                        <img src="assets/logo.png" 
-                             alt="Logo Colegio" 
-                             class="h-10 w-10 rounded-full border-2 border-blue-600">
+                        <div class="h-10 w-10 rounded-full border-2 border-blue-600 bg-blue-100 flex items-center justify-center">
+                            <span class="text-blue-600 font-bold">CIV</span>
+                        </div>
                         <div>
                             <h1 class="text-lg font-bold text-blue-900 dark:text-blue-100">
                                 Colegio Ildefonso Vázquez
@@ -51,46 +33,28 @@
                     </div>
                     
                     <nav class="hidden md:flex items-center space-x-6">
-                        <button onclick="app.showView('home')" 
-                                class="nav-link" data-view="home">
-                            Inicio
-                        </button>
-                        <button onclick="app.showView('publications')" 
-                                class="nav-link" data-view="publications">
-                            Publicaciones
-                        </button>
-                        <button onclick="app.showView('subjects')" 
-                                class="nav-link" data-view="subjects">
-                            Materias
-                        </button>
-                        <button onclick="app.showView('about')" 
-                                class="nav-link" data-view="about">
-                            Acerca
-                        </button>
+                        <button onclick="app.showView('home')" class="nav-link" data-view="home">Inicio</button>
+                        <button onclick="app.showView('publications')" class="nav-link" data-view="publications">Publicaciones</button>
+                        <button onclick="app.showView('subjects')" class="nav-link" data-view="subjects">Materias</button>
+                        <button onclick="app.showView('admin')" class="nav-link" data-view="admin">Admin</button>
                     </nav>
                     
                     <div class="flex items-center space-x-3">
-                        <button id="theme-toggle" 
-                                class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+                        <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
                             <i data-lucide="sun" id="theme-icon" class="w-5 h-5"></i>
                         </button>
                         
-                        <button id="admin-btn" 
-                                onclick="showLoginModal()"
-                                class="btn-primary text-sm">
+                        <button id="admin-btn" onclick="showLoginModal()" class="btn-primary text-sm hidden">
                             <i data-lucide="lock" class="w-4 h-4 mr-2"></i>
                             Admin
                         </button>
                         
-                        <button id="logout-btn" 
-                                onclick="authManager.logout()"
-                                class="btn-danger text-sm hidden">
+                        <button id="logout-btn" onclick="authManager.logout()" class="btn-danger text-sm hidden">
                             <i data-lucide="log-out" class="w-4 h-4 mr-2"></i>
                             Salir
                         </button>
                         
-                        <button id="mobile-menu-btn" 
-                                class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                        <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
                             <i data-lucide="menu" class="w-6 h-6"></i>
                         </button>
                     </div>
@@ -112,7 +76,140 @@
         <div id="loading" class="hidden fixed inset-0 bg-white/80 dark:bg-gray-900/80 z-50 flex items-center justify-center">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
-        <div id="views-container"></div>
+        
+        <div id="views-container">
+            <div id="home-view" class="view">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">Bienvenido al Colegio Ildefonso Vázquez</h2>
+                    <p class="text-gray-600 dark:text-gray-300">"Con fe hacia lo alto"</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="card p-6 text-center">
+                        <i data-lucide="book-open" class="w-12 h-12 text-blue-600 mx-auto mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">Materias</h3>
+                        <p id="total-subjects" class="text-3xl font-bold text-blue-600">0</p>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2">Disponibles</p>
+                    </div>
+                    
+                    <div class="card p-6 text-center">
+                        <i data-lucide="newspaper" class="w-12 h-12 text-green-600 mx-auto mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">Publicaciones</h3>
+                        <p id="total-publications" class="text-3xl font-bold text-green-600">0</p>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2">Recientes</p>
+                    </div>
+                    
+                    <div class="card p-6 text-center">
+                        <i data-lucide="download" class="w-12 h-12 text-red-600 mx-auto mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">Recursos</h3>
+                        <p id="total-resources" class="text-3xl font-bold text-red-600">0</p>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2">Descargables</p>
+                    </div>
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold mb-4">Publicaciones Recientes</h3>
+                    <div id="preview-publications" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+                
+                <div>
+                    <h3 class="text-2xl font-bold mb-4">Materias Destacadas</h3>
+                    <div id="subjects-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+                </div>
+            </div>
+            
+            <div id="publications-view" class="view hidden">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Publicaciones</h2>
+                    <button onclick="app.showAdminTab('publications')" class="btn-primary admin-only hidden">
+                        <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+                        Nueva Publicación
+                    </button>
+                </div>
+                <div id="publications-list" class="space-y-6"></div>
+            </div>
+            
+            <div id="subjects-view" class="view hidden">
+                <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-8">Materias</h2>
+                <div id="subjects-grid-full" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+            </div>
+            
+            <div id="resources-view" class="view hidden">
+                <h2 id="resources-title" class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Recursos</h2>
+                <p id="resources-subtitle" class="text-gray-600 dark:text-gray-400 mb-8"></p>
+                <div id="resources-list" class="space-y-6"></div>
+            </div>
+            
+            <div id="admin-view" class="view hidden">
+                <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-8">Panel de Administración</h2>
+                
+                <div class="flex border-b dark:border-gray-700 mb-6">
+                    <button onclick="app.showAdminTab('dashboard')" class="admin-tab px-4 py-2 font-medium">Dashboard</button>
+                    <button onclick="app.showAdminTab('publications')" class="admin-tab px-4 py-2 font-medium">Publicaciones</button>
+                    <button onclick="app.showAdminTab('subjects')" class="admin-tab px-4 py-2 font-medium">Materias</button>
+                </div>
+                
+                <div id="admin-dashboard" class="admin-tab-content">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="card p-6">
+                            <h3 class="font-bold mb-2">Materias</h3>
+                            <p id="admin-total-subjects" class="text-3xl font-bold">0</p>
+                        </div>
+                        <div class="card p-6">
+                            <h3 class="font-bold mb-2">Publicaciones</h3>
+                            <p id="admin-total-publications" class="text-3xl font-bold">0</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="card p-6">
+                            <h3 class="font-bold mb-4">Publicaciones Recientes</h3>
+                            <div id="admin-recent-publications" class="space-y-4"></div>
+                        </div>
+                        <div class="card p-6">
+                            <h3 class="font-bold mb-4">Actividad</h3>
+                            <div id="admin-recent-resources" class="space-y-4"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="admin-publications" class="admin-tab-content hidden">
+                    <div class="card p-6 mb-6">
+                        <h3 class="text-xl font-bold mb-4">Nueva Publicación</h3>
+                        <form id="publication-form" class="space-y-4">
+                            <div>
+                                <label class="form-label">Título</label>
+                                <input type="text" id="pub-title" class="form-input" required>
+                            </div>
+                            <div>
+                                <label class="form-label">Contenido</label>
+                                <textarea id="pub-content" class="form-input h-32" required></textarea>
+                            </div>
+                            <div>
+                                <label class="form-label">Imagen (Opcional)</label>
+                                <input type="file" id="pub-image" class="form-input" accept="image/*">
+                            </div>
+                            <button type="submit" class="btn-primary">
+                                <i data-lucide="upload" class="w-4 h-4 mr-2"></i>
+                                Publicar
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-4">Publicaciones Existentes</h3>
+                        <div id="admin-publications-list" class="space-y-4"></div>
+                    </div>
+                </div>
+                
+                <div id="admin-subjects" class="admin-tab-content hidden">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-4">Gestión de Materias</h3>
+                        <div id="admin-subjects-list" class="space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
     
     <footer class="gradient-colegio mt-12">
@@ -125,42 +222,48 @@
         <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 w-full max-w-md">
             <h3 class="text-xl font-bold mb-4">Acceso Administrativo</h3>
             <form id="login-form" class="space-y-4">
-                <input type="email" id="login-email" class="w-full p-2 border rounded dark:bg-gray-700" placeholder="Email" required>
-                <input type="password" id="login-password" class="w-full p-2 border rounded dark:bg-gray-700" placeholder="Contraseña" required>
-                <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Iniciar Sesión</button>
-                <button type="button" onclick="hideLoginModal()" class="w-full text-gray-500 mt-2 text-sm">Cancelar</button>
+                <input type="email" id="login-email" class="form-input" placeholder="Email" required>
+                <input type="password" id="login-password" class="form-input" placeholder="Contraseña" required>
+                <button type="submit" class="btn-primary w-full">Iniciar Sesión</button>
+                <button type="button" onclick="hideLoginModal()" class="btn-secondary w-full">Cancelar</button>
             </form>
         </div>
     </div>
     
     <script src="supabase-config.js"></script>
-    <script src="themes.js"></script>
     <script src="storage.js"></script>
     <script src="database.js"></script>
-    <script src="admin.js"></script>
     <script src="app.js"></script>
     
     <script>
-        function showLoginModal() { document.getElementById('login-modal').classList.remove('hidden'); }
-        function hideLoginModal() { document.getElementById('login-modal').classList.add('hidden'); }
+        function showLoginModal() { 
+            document.getElementById('login-modal').classList.remove('hidden'); 
+        }
         
-        document.getElementById('login-form')?.addEventListener('submit', async (e) => {
+        function hideLoginModal() { 
+            document.getElementById('login-modal').classList.add('hidden'); 
+        }
+        
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             
-            // Simulación simple de admin para evitar complicaciones de Auth por ahora
             if(email === "admin@colegio.edu" && password === "colegio2025") {
                 localStorage.setItem('isAdmin', 'true');
                 hideLoginModal();
+                document.getElementById('admin-btn').classList.add('hidden');
+                document.getElementById('logout-btn').classList.remove('hidden');
+                app.checkAuth();
                 app.showView('admin');
+                alert('Bienvenido Administrador');
             } else {
                 alert('Credenciales incorrectas');
             }
         });
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('Sistema cargado con Supabase e ImgBB');
+            console.log('Sistema cargado');
             lucide.createIcons();
         });
     </script>
