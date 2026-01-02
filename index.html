@@ -4,13 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Colegio Ildefonso Vázquez</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- CAMBIA Tailwind CDN por una versión estable -->
+    <script src="https://cdn.tailwindcss.com/3.4.1"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
     <meta name="theme-color" content="#1e40af">
     <meta name="description" content="Plataforma educativa del Colegio Ildefonso Vázquez">
+    
+    <!-- CSS para arreglar el problema de escritura -->
+    <style>
+        /* Arregla el problema del cursor y escritura */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        input, textarea, button, select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        
+        input:focus, textarea:focus, button:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+        
+        /* Mejora la legibilidad */
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+    </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white font-sans transition-colors duration-300">
     
@@ -19,8 +46,8 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex items-center space-x-3">
-                        <div class="h-10 w-10 rounded-full border-2 border-blue-600 bg-blue-100 flex items-center justify-center">
-                            <span class="text-blue-600 font-bold">CIV</span>
+                        <div class="h-10 w-10 rounded-full border-2 border-blue-600 bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                            <span class="text-blue-600 dark:text-blue-300 font-bold">CIV</span>
                         </div>
                         <div>
                             <h1 class="text-lg font-bold text-blue-900 dark:text-blue-100">
@@ -44,7 +71,7 @@
                             <i data-lucide="sun" id="theme-icon" class="w-5 h-5"></i>
                         </button>
                         
-                        <button id="admin-btn" onclick="showLoginModal()" class="btn-primary text-sm hidden">
+                        <button id="admin-btn" onclick="showLoginModal()" class="btn-primary text-sm">
                             <i data-lucide="lock" class="w-4 h-4 mr-2"></i>
                             Admin
                         </button>
@@ -64,10 +91,10 @@
         
         <div id="mobile-menu" class="md:hidden bg-white dark:bg-gray-800 border-t dark:border-gray-700 hidden">
             <div class="px-4 py-3 space-y-1">
-                <button onclick="app.showView('home')" class="nav-link-mobile block w-full text-left">Inicio</button>
-                <button onclick="app.showView('publications')" class="nav-link-mobile block w-full text-left">Publicaciones</button>
-                <button onclick="app.showView('subjects')" class="nav-link-mobile block w-full text-left">Materias</button>
-                <button onclick="app.showView('admin')" class="nav-link-mobile block w-full text-left text-blue-600">Panel Admin</button>
+                <button onclick="app.showView('home')" class="nav-link-mobile block w-full text-left py-2 px-4 rounded hover:bg-gray-100 dark:hover:bg-gray-700">Inicio</button>
+                <button onclick="app.showView('publications')" class="nav-link-mobile block w-full text-left py-2 px-4 rounded hover:bg-gray-100 dark:hover:bg-gray-700">Publicaciones</button>
+                <button onclick="app.showView('subjects')" class="nav-link-mobile block w-full text-left py-2 px-4 rounded hover:bg-gray-100 dark:hover:bg-gray-700">Materias</button>
+                <button onclick="app.showView('admin')" class="nav-link-mobile block w-full text-left py-2 px-4 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400">Panel Admin</button>
             </div>
         </div>
     </header>
@@ -109,12 +136,16 @@
                 
                 <div class="mb-8">
                     <h3 class="text-2xl font-bold mb-4">Publicaciones Recientes</h3>
-                    <div id="preview-publications" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                    <div id="preview-publications" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <p class="text-gray-500 dark:text-gray-400 col-span-full text-center py-8">Cargando publicaciones...</p>
+                    </div>
                 </div>
                 
                 <div>
                     <h3 class="text-2xl font-bold mb-4">Materias Destacadas</h3>
-                    <div id="subjects-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+                    <div id="subjects-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <p class="text-gray-500 dark:text-gray-400 col-span-full text-center py-8">Cargando materias...</p>
+                    </div>
                 </div>
             </div>
             
@@ -126,49 +157,51 @@
                         Nueva Publicación
                     </button>
                 </div>
-                <div id="publications-list" class="space-y-6"></div>
+                <div id="publications-list" class="space-y-6">
+                    <p class="text-gray-500 dark:text-gray-400 text-center py-8">Cargando publicaciones...</p>
+                </div>
             </div>
             
             <div id="subjects-view" class="view hidden">
                 <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-8">Materias</h2>
-                <div id="subjects-grid-full" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
-            </div>
-            
-            <div id="resources-view" class="view hidden">
-                <h2 id="resources-title" class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Recursos</h2>
-                <p id="resources-subtitle" class="text-gray-600 dark:text-gray-400 mb-8"></p>
-                <div id="resources-list" class="space-y-6"></div>
+                <div id="subjects-grid-full" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <p class="text-gray-500 dark:text-gray-400 col-span-full text-center py-8">Cargando materias...</p>
+                </div>
             </div>
             
             <div id="admin-view" class="view hidden">
                 <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-8">Panel de Administración</h2>
                 
-                <div class="flex border-b dark:border-gray-700 mb-6">
-                    <button onclick="app.showAdminTab('dashboard')" class="admin-tab px-4 py-2 font-medium">Dashboard</button>
-                    <button onclick="app.showAdminTab('publications')" class="admin-tab px-4 py-2 font-medium">Publicaciones</button>
-                    <button onclick="app.showAdminTab('subjects')" class="admin-tab px-4 py-2 font-medium">Materias</button>
+                <div class="flex border-b dark:border-gray-700 mb-6 overflow-x-auto">
+                    <button onclick="app.showAdminTab('dashboard')" class="admin-tab px-4 py-2 font-medium whitespace-nowrap border-b-2 border-transparent hover:border-blue-500">Dashboard</button>
+                    <button onclick="app.showAdminTab('publications')" class="admin-tab px-4 py-2 font-medium whitespace-nowrap border-b-2 border-transparent hover:border-blue-500">Publicaciones</button>
+                    <button onclick="app.showAdminTab('subjects')" class="admin-tab px-4 py-2 font-medium whitespace-nowrap border-b-2 border-transparent hover:border-blue-500">Materias</button>
                 </div>
                 
                 <div id="admin-dashboard" class="admin-tab-content">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         <div class="card p-6">
-                            <h3 class="font-bold mb-2">Materias</h3>
-                            <p id="admin-total-subjects" class="text-3xl font-bold">0</p>
+                            <h3 class="font-bold mb-2 text-lg">Materias</h3>
+                            <p id="admin-total-subjects" class="text-3xl font-bold text-blue-600">0</p>
                         </div>
                         <div class="card p-6">
-                            <h3 class="font-bold mb-2">Publicaciones</h3>
-                            <p id="admin-total-publications" class="text-3xl font-bold">0</p>
+                            <h3 class="font-bold mb-2 text-lg">Publicaciones</h3>
+                            <p id="admin-total-publications" class="text-3xl font-bold text-green-600">0</p>
                         </div>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="card p-6">
-                            <h3 class="font-bold mb-4">Publicaciones Recientes</h3>
-                            <div id="admin-recent-publications" class="space-y-4"></div>
+                            <h3 class="font-bold mb-4 text-lg">Publicaciones Recientes</h3>
+                            <div id="admin-recent-publications" class="space-y-4">
+                                <p class="text-gray-500 dark:text-gray-400">Cargando...</p>
+                            </div>
                         </div>
                         <div class="card p-6">
-                            <h3 class="font-bold mb-4">Actividad</h3>
-                            <div id="admin-recent-resources" class="space-y-4"></div>
+                            <h3 class="font-bold mb-4 text-lg">Actividad</h3>
+                            <div id="admin-recent-resources" class="space-y-4">
+                                <p class="text-gray-500 dark:text-gray-400">Sin actividad reciente</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -179,33 +212,44 @@
                         <form id="publication-form" class="space-y-4">
                             <div>
                                 <label class="form-label">Título</label>
-                                <input type="text" id="pub-title" class="form-input" required>
+                                <input type="text" id="pub-title" class="form-input" required placeholder="Escribe el título aquí">
                             </div>
                             <div>
                                 <label class="form-label">Contenido</label>
-                                <textarea id="pub-content" class="form-input h-32" required></textarea>
+                                <textarea id="pub-content" class="form-input h-32" required placeholder="Escribe el contenido aquí"></textarea>
                             </div>
                             <div>
                                 <label class="form-label">Imagen (Opcional)</label>
-                                <input type="file" id="pub-image" class="form-input" accept="image/*">
+                                <input type="file" id="pub-image" class="form-input p-2" accept="image/*">
+                                <p class="text-sm text-gray-500 mt-1">Máximo 10MB. Formatos: JPG, PNG, GIF</p>
                             </div>
-                            <button type="submit" class="btn-primary">
-                                <i data-lucide="upload" class="w-4 h-4 mr-2"></i>
-                                Publicar
-                            </button>
+                            <div class="flex space-x-4">
+                                <button type="submit" class="btn-primary">
+                                    <i data-lucide="upload" class="w-4 h-4 mr-2"></i>
+                                    Publicar
+                                </button>
+                                <button type="button" onclick="document.getElementById('publication-form').reset()" class="btn-secondary">
+                                    <i data-lucide="x" class="w-4 h-4 mr-2"></i>
+                                    Limpiar
+                                </button>
+                            </div>
                         </form>
                     </div>
                     
                     <div class="card p-6">
                         <h3 class="text-xl font-bold mb-4">Publicaciones Existentes</h3>
-                        <div id="admin-publications-list" class="space-y-4"></div>
+                        <div id="admin-publications-list" class="space-y-4">
+                            <p class="text-gray-500 dark:text-gray-400">Cargando publicaciones...</p>
+                        </div>
                     </div>
                 </div>
                 
                 <div id="admin-subjects" class="admin-tab-content hidden">
                     <div class="card p-6">
                         <h3 class="text-xl font-bold mb-4">Gestión de Materias</h3>
-                        <div id="admin-subjects-list" class="space-y-4"></div>
+                        <div id="admin-subjects-list" class="space-y-4">
+                            <p class="text-gray-500 dark:text-gray-400">No hay materias registradas. Agrega tu primera materia.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -222,8 +266,8 @@
         <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 w-full max-w-md">
             <h3 class="text-xl font-bold mb-4">Acceso Administrativo</h3>
             <form id="login-form" class="space-y-4">
-                <input type="email" id="login-email" class="form-input" placeholder="Email" required>
-                <input type="password" id="login-password" class="form-input" placeholder="Contraseña" required>
+                <input type="email" id="login-email" class="form-input" placeholder="admin@colegio.edu" required>
+                <input type="password" id="login-password" class="form-input" placeholder="colegio2025" required>
                 <button type="submit" class="btn-primary w-full">Iniciar Sesión</button>
                 <button type="button" onclick="hideLoginModal()" class="btn-secondary w-full">Cancelar</button>
             </form>
@@ -236,35 +280,79 @@
     <script src="app.js"></script>
     
     <script>
+        // Funciones globales
         function showLoginModal() { 
             document.getElementById('login-modal').classList.remove('hidden'); 
+            document.getElementById('login-email').focus();
         }
         
         function hideLoginModal() { 
             document.getElementById('login-modal').classList.add('hidden'); 
         }
         
+        // Login simplificado
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('login-email').value;
+            const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value;
             
             if(email === "admin@colegio.edu" && password === "colegio2025") {
                 localStorage.setItem('isAdmin', 'true');
                 hideLoginModal();
+                
+                // Actualizar UI
                 document.getElementById('admin-btn').classList.add('hidden');
-                document.getElementById('logout-btn').classList.remove('hidden');
-                app.checkAuth();
-                app.showView('admin');
-                alert('Bienvenido Administrador');
+                const logoutBtn = document.getElementById('logout-btn');
+                if (logoutBtn) logoutBtn.classList.remove('hidden');
+                
+                // Recargar estado de admin
+                if (window.app) {
+                    window.app.checkAuth();
+                    window.app.showView('admin');
+                }
+                
+                // Mostrar mensaje de éxito
+                alert('✅ ¡Bienvenido Administrador!');
             } else {
-                alert('Credenciales incorrectas');
+                alert('❌ Credenciales incorrectas. Usa: admin@colegio.edu / colegio2025');
             }
         });
+        
+        // Logout function
+        window.authManager = {
+            logout: function() {
+                localStorage.removeItem('isAdmin');
+                document.getElementById('admin-btn').classList.remove('hidden');
+                document.getElementById('logout-btn').classList.add('hidden');
+                
+                if (window.app) {
+                    window.app.checkAuth();
+                    window.app.showView('home');
+                }
+                alert('✅ Sesión cerrada correctamente');
+            }
+        };
 
+        // Inicializar cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('Sistema cargado');
-            lucide.createIcons();
+            console.log('✅ Sistema cargado con Supabase e ImgBB');
+            
+            // Inicializar Lucide icons
+            if (window.lucide && window.lucide.createIcons) {
+                lucide.createIcons();
+            }
+            
+            // Arreglar el problema de escritura forzando el foco
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.style.backgroundColor = '';
+                });
+                
+                input.addEventListener('input', function() {
+                    console.log('Escribiendo en:', this.id, 'valor:', this.value);
+                });
+            });
         });
     </script>
 </body>
