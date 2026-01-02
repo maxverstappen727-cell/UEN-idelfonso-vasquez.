@@ -4,282 +4,984 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Colegio Ildefonso Vázquez</title>
-    <!-- CAMBIA Tailwind CDN por una versión estable -->
-    <script src="https://cdn.tailwindcss.com/3.4.1"></script>
+    
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+    
     <meta name="theme-color" content="#1e40af">
     <meta name="description" content="Plataforma educativa del Colegio Ildefonso Vázquez">
     
-    <!-- CSS para arreglar el problema de escritura -->
+    <!-- ESTILOS INLINE (Tailwind simplificado) -->
     <style>
-        /* Arregla el problema del cursor y escritura */
-        * {
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        input, textarea, button, select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-        }
-        
-        input:focus, textarea:focus, button:focus {
-            outline: 2px solid #3b82f6;
-            outline-offset: 2px;
-        }
-        
-        /* Mejora la legibilidad */
-        body {
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
-        }
+        /* Todos los estilos inline que te pasé anteriormente */
+        /* ... (mantén todos los estilos que te di) ... */
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white font-sans transition-colors duration-300">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+    <!-- TODO EL HTML QUE YA TIENES -->
+    <!-- ... -->
     
-    <header class="gradient-colegio shadow-lg sticky top-0 z-50">
-        <div class="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-16">
-                    <div class="flex items-center space-x-3">
-                        <div class="h-10 w-10 rounded-full border-2 border-blue-600 bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                            <span class="text-blue-600 dark:text-blue-300 font-bold">CIV</span>
+    <!-- ============================================
+         ORDEN CORRECTO DE SCRIPTS - ¡IMPORTANTE!
+         ============================================ -->
+    
+    <!-- 1. Supabase SDK (PRIMERO) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- 2. Configuración de Supabase (SEGUNDO) -->
+    <script>
+        // CONFIGURACIÓN SUPABASE - INLINE PARA ASEGURAR CARGA
+        console.log('🔧 Configurando Supabase INLINE...');
+        
+        const supabaseUrl = 'https://eixyvceoedhgpxkefnws.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpeHl2Y2VvZWRoZ3B4a2VmbndzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczMTk0MjYsImV4cCI6MjA4Mjg5NTQyNn0.izyXmqCZaacTYYomJZ2oUM1uT5ysFaJGdKP2Kc1YrtY';
+        
+        // Verificar que Supabase esté disponible
+        if (typeof window.supabase === 'undefined') {
+            console.error('❌ ERROR: Supabase SDK no se cargó');
+            document.write('<p style="color:red;padding:20px;">Error: Supabase no se cargó. Recarga la página.</p>');
+        } else {
+            console.log('✅ Supabase SDK disponible');
+            
+            // Crear cliente
+            const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+            
+            // Verificar conexión
+            supabaseClient.auth.getSession().then(({ data, error }) => {
+                if (error) {
+                    console.error('❌ Error en conexión Supabase:', error.message);
+                } else {
+                    console.log('✅ Supabase conectado correctamente');
+                    console.log('📊 URL:', supabaseUrl);
+                    console.log('🔑 Key:', supabaseAnonKey.substring(0, 20) + '...');
+                }
+            });
+            
+            // Exportar GLOBALMENTE
+            window.supabaseClient = supabaseClient;
+            console.log('✅ window.supabaseClient definido');
+        }
+    </script>
+    
+    <!-- 3. Storage Manager (TERCERO) -->
+    <script>
+        // STORAGE MANAGER (ImgBB) - INLINE
+        class StorageManager {
+            constructor() {
+                this.apiKey = 'c55c6a2ccb0bc61795de75942c0e087e';
+            }
+
+            async uploadImage(file, folder = 'publications') {
+                try {
+                    if (!file.type.startsWith('image/')) {
+                        throw new Error('Solo se permiten archivos de imagen');
+                    }
+                    
+                    const formData = new FormData();
+                    formData.append('image', file);
+
+                    console.log("Subiendo imagen a ImgBB...");
+
+                    const response = await fetch(`https://api.imgbb.com/1/upload?key=${this.apiKey}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        console.log("✅ Foto subida con éxito:", result.data.url);
+                        
+                        return {
+                            url: result.data.url,
+                            path: result.data.id,
+                            name: file.name,
+                            size: file.size,
+                            type: file.type,
+                            delete_url: result.data.delete_url
+                        };
+                    } else {
+                        throw new Error(result.error.message);
+                    }
+                    
+                } catch (error) {
+                    console.error("❌ Error en StorageManager:", error);
+                    alert("Error al subir la imagen: " + error.message);
+                    throw error;
+                }
+            }
+
+            async deleteImage(imageUrl) {
+                console.warn("La eliminación automática no está disponible en ImgBB gratuito");
+                return { success: true };
+            }
+
+            getOptimizedImageUrl(originalUrl) {
+                return originalUrl;
+            }
+
+            createLocalPreview(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = (e) => reject(e);
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
+        // Inicializar globalmente
+        window.storageManager = new StorageManager();
+        console.log('✅ storageManager inicializado');
+    </script>
+    
+    <!-- 4. Database Manager (CUARTO) -->
+    <script>
+        // DATABASE MANAGER - INLINE
+        class DatabaseManager {
+            constructor() {
+                console.log('🚀 DatabaseManager inicializado');
+                this.cacheDuration = 30000; // 30 segundos de cache
+                this.cache = {
+                    subjects: { data: null, timestamp: 0 },
+                    publications: { data: null, timestamp: 0 }
+                };
+                
+                // Verificar inmediatamente si supabaseClient existe
+                setTimeout(() => this.checkInitialization(), 100);
+            }
+            
+            checkInitialization() {
+                console.log('🔍 Verificando inicialización...');
+                console.log('supabaseClient disponible?', typeof window.supabaseClient !== 'undefined');
+                console.log('supabase disponible?', typeof window.supabase !== 'undefined');
+                
+                if (!window.supabaseClient) {
+                    console.warn('⚠️ supabaseClient no disponible. Reintentando en 1 segundo...');
+                    setTimeout(() => this.checkInitialization(), 1000);
+                } else {
+                    console.log('✅ DatabaseManager completamente inicializado');
+                }
+            }
+
+            checkSupabase() {
+                if (!window.supabaseClient) {
+                    console.error('❌ ERROR: supabaseClient no está definido');
+                    console.log('ℹ️ Estado actual:', {
+                        supabase: typeof window.supabase,
+                        supabaseClient: typeof window.supabaseClient,
+                        storageManager: typeof window.storageManager
+                    });
+                    return false;
+                }
+                return true;
+            }
+
+            async getSubjects(forceRefresh = false) {
+                // Verificar Supabase primero
+                if (!this.checkSupabase()) {
+                    console.log('🔄 Reintentando obtener materias en 500ms...');
+                    return new Promise(resolve => {
+                        setTimeout(async () => {
+                            const data = await this.getSubjects(forceRefresh);
+                            resolve(data);
+                        }, 500);
+                    });
+                }
+
+                // Verificar cache
+                const now = Date.now();
+                if (!forceRefresh && this.cache.subjects.data && 
+                    (now - this.cache.subjects.timestamp) < this.cacheDuration) {
+                    console.log('📚 Materias desde caché');
+                    return this.cache.subjects.data;
+                }
+
+                try {
+                    console.log('🔍 Obteniendo materias desde Supabase...');
+                    const { data, error } = await window.supabaseClient
+                        .from('subjects')
+                        .select('*')
+                        .order('order', { ascending: true });
+                    
+                    if (error) {
+                        console.error('❌ Error obteniendo materias:', error.message);
+                        return [];
+                    }
+                    
+                    console.log(`✅ ${data.length} materias obtenidas`);
+                    this.cache.subjects = { data, timestamp: now };
+                    return data;
+                    
+                } catch (error) {
+                    console.error('❌ Excepción en getSubjects:', error);
+                    return [];
+                }
+            }
+
+            async getPublications(limit = null, forceRefresh = false) {
+                // Verificar Supabase primero
+                if (!this.checkSupabase()) {
+                    console.log('🔄 Reintentando obtener publicaciones en 500ms...');
+                    return new Promise(resolve => {
+                        setTimeout(async () => {
+                            const data = await this.getPublications(limit, forceRefresh);
+                            resolve(data);
+                        }, 500);
+                    });
+                }
+
+                // Verificar cache
+                const now = Date.now();
+                if (!forceRefresh && this.cache.publications.data && 
+                    (now - this.cache.publications.timestamp) < this.cacheDuration) {
+                    console.log('📰 Publicaciones desde caché');
+                    let data = this.cache.publications.data;
+                    if (limit && data.length > limit) {
+                        return data.slice(0, limit);
+                    }
+                    return data;
+                }
+
+                try {
+                    console.log('📰 Obteniendo publicaciones desde Supabase...');
+                    let query = window.supabaseClient
+                        .from('publicaciones')
+                        .select('*')
+                        .order('fecha', { ascending: false });
+                    
+                    if (limit) {
+                        query = query.limit(limit);
+                        console.log(`🔍 Limitando a ${limit} publicaciones`);
+                    }
+                    
+                    const { data, error } = await query;
+                    
+                    if (error) {
+                        console.error('❌ Error obteniendo publicaciones:', error.message);
+                        return [];
+                    }
+                    
+                    console.log(`✅ ${data.length} publicaciones obtenidas`);
+                    this.cache.publications = { data, timestamp: now };
+                    return data;
+                    
+                } catch (error) {
+                    console.error('❌ Excepción en getPublications:', error);
+                    return [];
+                }
+            }
+
+            async addPublication(publication) {
+                try {
+                    if (!this.checkSupabase()) {
+                        return { success: false, error: 'Supabase no inicializado' };
+                    }
+                    
+                    console.log('➕ Agregando nueva publicación:', publication.title);
+                    
+                    const { data, error } = await window.supabaseClient
+                        .from('publicaciones')
+                        .insert([{
+                            titulo: publication.title,
+                            descripcion: publication.content,
+                            url_imagen: publication.imageUrl || '',
+                            fecha: new Date().toISOString(),
+                            autor: 'Administrador',
+                            likes: 0
+                        }])
+                        .select();
+                    
+                    if (error) {
+                        console.error('❌ Error insertando publicación:', error);
+                        return { success: false, error: error.message };
+                    }
+                    
+                    console.log('✅ Publicación agregada exitosamente');
+                    
+                    // Invalidar cache
+                    this.cache.publications = { data: null, timestamp: 0 };
+                    
+                    return { success: true, data: data[0] };
+                    
+                } catch (error) {
+                    console.error('❌ Excepción en addPublication:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            async deletePublication(id) {
+                try {
+                    if (!this.checkSupabase()) {
+                        return { success: false, error: 'Supabase no inicializado' };
+                    }
+                    
+                    console.log(`🗑️ Eliminando publicación ID: ${id}`);
+                    
+                    const { error } = await window.supabaseClient
+                        .from('publicaciones')
+                        .delete()
+                        .eq('id', id);
+                    
+                    if (error) {
+                        console.error('❌ Error eliminando publicación:', error);
+                        return { success: false, error: error.message };
+                    }
+                    
+                    console.log('✅ Publicación eliminada');
+                    
+                    // Invalidar cache
+                    this.cache.publications = { data: null, timestamp: 0 };
+                    
+                    return { success: true };
+                    
+                } catch (error) {
+                    console.error('❌ Excepción en deletePublication:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            async getStats() {
+                try {
+                    const [subjects, publications] = await Promise.all([
+                        this.getSubjects(),
+                        this.getPublications()
+                    ]);
+                    
+                    return {
+                        totalSubjects: subjects.length,
+                        totalPublications: publications.length,
+                        totalResources: 0,
+                        lastUpdate: new Date().toLocaleTimeString()
+                    };
+                } catch (error) {
+                    console.error('❌ Error obteniendo estadísticas:', error);
+                    return { totalSubjects: 0, totalPublications: 0, totalResources: 0 };
+                }
+            }
+
+            async getSchoolInfo() {
+                return { 
+                    nombre: "Colegio Ildefonso Vázquez",
+                    lema: "Con fe hacia lo alto",
+                    año: "2025",
+                    director: "María González",
+                    telefono: "(601) 234-5678",
+                    email: "info@colegioildelfonso.edu.co",
+                    direccion: "Calle 123 #45-67, Bogotá",
+                    fundacion: "1975"
+                };
+            }
+        }
+
+        // Inicializar globalmente
+        window.dbManager = new DatabaseManager();
+        console.log('✅ DatabaseManager listo para usar');
+    </script>
+    
+    <!-- 5. App.js - Código de la aplicación (QUINTO) -->
+    <script>
+        // APP.JS - INLINE
+        class ColegioApp {
+            constructor() {
+                console.log('🏫 ColegioApp inicializando...');
+                this.currentView = 'home';
+                this.activeSubject = null;
+                this.init();
+            }
+
+            async init() {
+                console.log('🔧 Inicializando aplicación...');
+                this.loadIcons();
+                this.setupEventListeners();
+                this.initThemes();
+                this.checkAuth();
+                
+                // Esperar un momento para que todo cargue
+                setTimeout(() => {
+                    this.loadInitialData();
+                }, 1000);
+            }
+
+            loadIcons() {
+                if (window.lucide && window.lucide.createIcons) {
+                    lucide.createIcons();
+                    console.log('✅ Iconos cargados');
+                } else {
+                    console.warn('⚠️ Lucide no disponible');
+                }
+            }
+
+            setupEventListeners() {
+                // Menú móvil
+                const mobileBtn = document.getElementById('mobile-menu-btn');
+                if (mobileBtn) {
+                    mobileBtn.addEventListener('click', () => {
+                        document.getElementById('mobile-menu').classList.toggle('hidden');
+                    });
+                }
+                
+                // Cerrar menú al hacer clic fuera
+                document.addEventListener('click', (e) => {
+                    const menu = document.getElementById('mobile-menu');
+                    const btn = document.getElementById('mobile-menu-btn');
+                    if (menu && !menu.contains(e.target) && btn && !btn.contains(e.target)) {
+                        menu.classList.add('hidden');
+                    }
+                });
+            }
+
+            initThemes() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                if (savedTheme === 'dark') {
+                    document.body.classList.add('dark');
+                    const icon = document.getElementById('theme-icon');
+                    if (icon) icon.setAttribute('data-lucide', 'moon');
+                }
+            }
+
+            checkAuth() {
+                const isAdmin = localStorage.getItem('isAdmin') === 'true';
+                console.log('🔐 Estado de autenticación:', isAdmin ? 'Admin' : 'Usuario');
+                
+                const adminElements = document.querySelectorAll('.admin-only');
+                adminElements.forEach(el => {
+                    el.classList.toggle('hidden', !isAdmin);
+                });
+            }
+
+            async loadInitialData() {
+                console.log('📥 Cargando datos iniciales...');
+                
+                // Mostrar loading
+                const loadingEl = document.getElementById('loading');
+                if (loadingEl) loadingEl.classList.remove('hidden');
+                
+                try {
+                    // Verificar que dbManager esté listo
+                    if (!window.dbManager) {
+                        console.error('❌ dbManager no disponible');
+                        return;
+                    }
+                    
+                    console.log('✅ dbManager disponible, cargando datos...');
+                    
+                    const [subjects, publications, schoolInfo] = await Promise.all([
+                        window.dbManager.getSubjects(),
+                        window.dbManager.getPublications(3),
+                        window.dbManager.getSchoolInfo()
+                    ]);
+                    
+                    console.log('📊 Datos cargados:', {
+                        subjects: subjects.length,
+                        publications: publications.length
+                    });
+                    
+                    this.updateStats();
+                    this.renderPreviewPublications(publications);
+                    this.renderSubjectsGrid(subjects);
+                    this.updateSchoolInfo(schoolInfo);
+                    
+                } catch (error) {
+                    console.error("❌ Error cargando datos iniciales:", error);
+                    this.showError("Error cargando datos. Intenta recargar la página.");
+                } finally {
+                    // Ocultar loading
+                    if (loadingEl) loadingEl.classList.add('hidden');
+                }
+            }
+
+            async updateStats() {
+                try {
+                    if (!window.dbManager) {
+                        console.error('❌ dbManager no disponible para stats');
+                        return;
+                    }
+                    
+                    const stats = await window.dbManager.getStats();
+                    console.log('📈 Estadísticas:', stats);
+                    
+                    const totalSubjects = document.getElementById('total-subjects');
+                    const totalPublications = document.getElementById('total-publications');
+                    const totalResources = document.getElementById('total-resources');
+                    
+                    if (totalSubjects) totalSubjects.textContent = stats.totalSubjects;
+                    if (totalPublications) totalPublications.textContent = stats.totalPublications;
+                    if (totalResources) totalResources.textContent = stats.totalResources;
+                    
+                } catch (error) {
+                    console.error("❌ Error cargando estadísticas:", error);
+                }
+            }
+
+            renderPreviewPublications(publications) {
+                const container = document.getElementById('preview-publications');
+                if (!container) {
+                    console.error('❌ Container preview-publications no encontrado');
+                    return;
+                }
+                
+                if (!publications || publications.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-full text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                            <i data-lucide="newspaper" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
+                            <p class="text-gray-600 dark:text-gray-400">No hay publicaciones recientes</p>
                         </div>
-                        <div>
-                            <h1 class="text-lg font-bold text-blue-900 dark:text-blue-100">
-                                Colegio Ildefonso Vázquez
-                            </h1>
-                            <p class="text-xs font-semibold text-red-700 dark:text-red-300 uppercase">
-                                Con fe hacia lo alto
+                    `;
+                    this.loadIcons();
+                    return;
+                }
+                
+                container.innerHTML = publications.map(pub => `
+                    <div class="card p-6 hover:shadow-lg transition-shadow cursor-pointer" onclick="app.showView('publications')">
+                        <div class="flex items-start justify-between mb-3">
+                            <h4 class="font-bold text-gray-800 dark:text-white line-clamp-2 flex-1">${pub.titulo}</h4>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 ml-2 whitespace-nowrap">${this.formatDate(pub.fecha)}</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-3 mb-4">${pub.descripcion}</p>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-gray-500 dark:text-gray-400">${pub.autor || 'Colegio'}</span>
+                            <div class="flex items-center space-x-3">
+                                <span class="flex items-center text-gray-500 dark:text-gray-400">
+                                    <i data-lucide="heart" class="w-3 h-3 mr-1 text-red-500"></i>
+                                    ${pub.likes || 0}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                this.loadIcons();
+            }
+
+            renderSubjectsGrid(subjects) {
+                const container = document.getElementById('subjects-grid');
+                if (!container) return;
+                
+                if (!subjects || subjects.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-full text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                            <i data-lucide="book-open" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
+                            <h3 class="text-xl font-bold text-gray-700 dark:text-white mb-2">No hay materias</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6">Aún no se han agregado materias.</p>
+                        </div>
+                    `;
+                    this.loadIcons();
+                    return;
+                }
+                
+                container.innerHTML = subjects.slice(0, 4).map(subject => {
+                    const colorClass = subject.color || 'bg-blue-600';
+                    const icon = subject.icon || '📚';
+                    
+                    return `
+                    <div class="card p-6 hover:shadow-lg transition-shadow cursor-pointer" onclick="app.showSubjectResources('${subject.id}')">
+                        <div class="${colorClass} w-16 h-16 rounded-xl flex items-center justify-center text-3xl mb-4">
+                            ${icon}
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">${subject.name}</h3>
+                        ${subject.grade ? `<p class="text-gray-600 dark:text-gray-300 mb-4">${subject.grade}</p>` : ''}
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-500 dark:text-gray-400">
+                                Ver recursos →
+                            </span>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+                
+                this.loadIcons();
+            }
+
+            formatDate(dateString) {
+                if (!dateString) return 'Fecha no disponible';
+                try {
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('es-ES', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                } catch (error) {
+                    return 'Fecha inválida';
+                }
+            }
+
+            async showView(viewName, params = {}) {
+                console.log('🔄 Cambiando a vista:', viewName);
+                
+                // Ocultar todas las vistas
+                document.querySelectorAll('.view').forEach(view => {
+                    view.classList.add('hidden');
+                });
+                
+                // Actualizar navegación
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                    if (link.dataset.view === viewName) {
+                        link.classList.add('active');
+                    }
+                });
+                
+                // Cerrar menú móvil
+                document.getElementById('mobile-menu')?.classList.add('hidden');
+                
+                // Mostrar vista seleccionada
+                const viewElement = document.getElementById(`${viewName}-view`);
+                if (viewElement) {
+                    viewElement.classList.remove('hidden');
+                }
+                
+                // Cargar datos específicos de la vista
+                if (viewName === 'admin') {
+                    await this.loadAdminView();
+                } else if (viewName === 'publications') {
+                    await this.loadAllPublications();
+                } else if (viewName === 'subjects') {
+                    await this.loadAllSubjects();
+                }
+            }
+
+            async loadAllPublications() {
+                try {
+                    if (!window.dbManager) {
+                        console.error('❌ dbManager no disponible');
+                        return;
+                    }
+                    
+                    const publications = await window.dbManager.getPublications();
+                    this.renderPublicationsList(publications);
+                } catch (error) {
+                    console.error("❌ Error cargando publicaciones:", error);
+                }
+            }
+
+            renderPublicationsList(publications) {
+                const container = document.getElementById('publications-list');
+                if (!container) return;
+                
+                if (!publications || publications.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                            <i data-lucide="newspaper" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
+                            <h3 class="text-xl font-bold text-gray-700 dark:text-white mb-2">No hay publicaciones</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6">
+                                Aún no se han publicado noticias o anuncios.
                             </p>
                         </div>
-                    </div>
-                    
-                    <nav class="hidden md:flex items-center space-x-6">
-                        <button onclick="app.showView('home')" class="nav-link" data-view="home">Inicio</button>
-                        <button onclick="app.showView('publications')" class="nav-link" data-view="publications">Publicaciones</button>
-                        <button onclick="app.showView('subjects')" class="nav-link" data-view="subjects">Materias</button>
-                        <button onclick="app.showView('admin')" class="nav-link" data-view="admin">Admin</button>
-                    </nav>
-                    
-                    <div class="flex items-center space-x-3">
-                        <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-                            <i data-lucide="sun" id="theme-icon" class="w-5 h-5"></i>
-                        </button>
+                    `;
+                    this.loadIcons();
+                    return;
+                }
+                
+                container.innerHTML = publications.map(pub => `
+                    <div class="card overflow-hidden hover:shadow-lg transition-shadow">
+                        ${pub.url_imagen ? `
+                        <div class="border-b dark:border-gray-700">
+                            <img src="${pub.url_imagen}" 
+                                 alt="${pub.titulo}" 
+                                 class="w-full h-64 object-cover"
+                                 loading="lazy">
+                        </div>
+                        ` : ''}
                         
-                        <button id="admin-btn" onclick="showLoginModal()" class="btn-primary text-sm">
-                            <i data-lucide="lock" class="w-4 h-4 mr-2"></i>
-                            Admin
-                        </button>
-                        
-                        <button id="logout-btn" onclick="authManager.logout()" class="btn-danger text-sm hidden">
-                            <i data-lucide="log-out" class="w-4 h-4 mr-2"></i>
-                            Salir
-                        </button>
-                        
-                        <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-                            <i data-lucide="menu" class="w-6 h-6"></i>
-                        </button>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-bold text-gray-800 dark:text-white">${pub.titulo}</h3>
+                                <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                    <i data-lucide="calendar" class="w-4 h-4 mr-1"></i>
+                                    ${this.formatDate(pub.fecha)}
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4 mb-4 text-sm">
+                                <div class="flex items-center">
+                                    <i data-lucide="user" class="w-4 h-4 mr-1 text-gray-400"></i>
+                                    <span class="text-gray-600 dark:text-gray-300">${pub.autor || 'Colegio'}</span>
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-700 dark:text-gray-300 mb-6 whitespace-pre-line">${pub.descripcion}</p>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        
-        <div id="mobile-menu" class="md:hidden bg-white dark:bg-gray-800 border-t dark:border-gray-700 hidden">
-            <div class="px-4 py-3 space-y-1">
-                <button onclick="app.showView('home')" class="nav-link-mobile block w-full text-left py-2 px-4 rounded hover:bg-gray-100 dark:hover:bg-gray-700">Inicio</button>
-                <button onclick="app.showView('publications')" class="nav-link-mobile block w-full text-left py-2 px-4 rounded hover:bg-gray-100 dark:hover:bg-gray-700">Publicaciones</button>
-                <button onclick="app.showView('subjects')" class="nav-link-mobile block w-full text-left py-2 px-4 rounded hover:bg-gray-100 dark:hover:bg-gray-700">Materias</button>
-                <button onclick="app.showView('admin')" class="nav-link-mobile block w-full text-left py-2 px-4 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400">Panel Admin</button>
-            </div>
-        </div>
-    </header>
-    
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div id="loading" class="hidden fixed inset-0 bg-white/80 dark:bg-gray-900/80 z-50 flex items-center justify-center">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-        
-        <div id="views-container">
-            <div id="home-view" class="view">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">Bienvenido al Colegio Ildefonso Vázquez</h2>
-                    <p class="text-gray-600 dark:text-gray-300">"Con fe hacia lo alto"</p>
-                </div>
+                `).join('');
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="card p-6 text-center">
-                        <i data-lucide="book-open" class="w-12 h-12 text-blue-600 mx-auto mb-4"></i>
-                        <h3 class="text-xl font-bold mb-2">Materias</h3>
-                        <p id="total-subjects" class="text-3xl font-bold text-blue-600">0</p>
-                        <p class="text-gray-600 dark:text-gray-400 mt-2">Disponibles</p>
-                    </div>
+                this.loadIcons();
+            }
+
+            async loadAllSubjects() {
+                try {
+                    if (!window.dbManager) {
+                        console.error('❌ dbManager no disponible');
+                        return;
+                    }
                     
-                    <div class="card p-6 text-center">
-                        <i data-lucide="newspaper" class="w-12 h-12 text-green-600 mx-auto mb-4"></i>
-                        <h3 class="text-xl font-bold mb-2">Publicaciones</h3>
-                        <p id="total-publications" class="text-3xl font-bold text-green-600">0</p>
-                        <p class="text-gray-600 dark:text-gray-400 mt-2">Recientes</p>
-                    </div>
+                    const subjects = await window.dbManager.getSubjects();
+                    this.renderAllSubjects(subjects);
+                } catch (error) {
+                    console.error("❌ Error cargando materias:", error);
+                }
+            }
+
+            renderAllSubjects(subjects) {
+                const container = document.getElementById('subjects-grid-full');
+                if (!container) return;
+                
+                if (!subjects || subjects.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-full text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                            <i data-lucide="book-open" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
+                            <h3 class="text-xl font-bold text-gray-700 dark:text-white mb-2">No hay materias</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6">Aún no se han agregado materias.</p>
+                        </div>
+                    `;
+                    this.loadIcons();
+                    return;
+                }
+                
+                container.innerHTML = subjects.map(subject => {
+                    const colorClass = subject.color || 'bg-blue-600';
+                    const icon = subject.icon || '📚';
                     
-                    <div class="card p-6 text-center">
-                        <i data-lucide="download" class="w-12 h-12 text-red-600 mx-auto mb-4"></i>
-                        <h3 class="text-xl font-bold mb-2">Recursos</h3>
-                        <p id="total-resources" class="text-3xl font-bold text-red-600">0</p>
-                        <p class="text-gray-600 dark:text-gray-400 mt-2">Descargables</p>
-                    </div>
-                </div>
-                
-                <div class="mb-8">
-                    <h3 class="text-2xl font-bold mb-4">Publicaciones Recientes</h3>
-                    <div id="preview-publications" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <p class="text-gray-500 dark:text-gray-400 col-span-full text-center py-8">Cargando publicaciones...</p>
-                    </div>
-                </div>
-                
-                <div>
-                    <h3 class="text-2xl font-bold mb-4">Materias Destacadas</h3>
-                    <div id="subjects-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        <p class="text-gray-500 dark:text-gray-400 col-span-full text-center py-8">Cargando materias...</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="publications-view" class="view hidden">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Publicaciones</h2>
-                    <button onclick="app.showAdminTab('publications')" class="btn-primary admin-only hidden">
-                        <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
-                        Nueva Publicación
-                    </button>
-                </div>
-                <div id="publications-list" class="space-y-6">
-                    <p class="text-gray-500 dark:text-gray-400 text-center py-8">Cargando publicaciones...</p>
-                </div>
-            </div>
-            
-            <div id="subjects-view" class="view hidden">
-                <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-8">Materias</h2>
-                <div id="subjects-grid-full" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <p class="text-gray-500 dark:text-gray-400 col-span-full text-center py-8">Cargando materias...</p>
-                </div>
-            </div>
-            
-            <div id="admin-view" class="view hidden">
-                <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-8">Panel de Administración</h2>
-                
-                <div class="flex border-b dark:border-gray-700 mb-6 overflow-x-auto">
-                    <button onclick="app.showAdminTab('dashboard')" class="admin-tab px-4 py-2 font-medium whitespace-nowrap border-b-2 border-transparent hover:border-blue-500">Dashboard</button>
-                    <button onclick="app.showAdminTab('publications')" class="admin-tab px-4 py-2 font-medium whitespace-nowrap border-b-2 border-transparent hover:border-blue-500">Publicaciones</button>
-                    <button onclick="app.showAdminTab('subjects')" class="admin-tab px-4 py-2 font-medium whitespace-nowrap border-b-2 border-transparent hover:border-blue-500">Materias</button>
-                </div>
-                
-                <div id="admin-dashboard" class="admin-tab-content">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        <div class="card p-6">
-                            <h3 class="font-bold mb-2 text-lg">Materias</h3>
-                            <p id="admin-total-subjects" class="text-3xl font-bold text-blue-600">0</p>
+                    return `
+                    <div class="card p-6 text-center hover:shadow-lg">
+                        <div class="${colorClass} w-16 h-16 rounded-xl flex items-center justify-center text-3xl mb-4 mx-auto">
+                            ${icon}
                         </div>
-                        <div class="card p-6">
-                            <h3 class="font-bold mb-2 text-lg">Publicaciones</h3>
-                            <p id="admin-total-publications" class="text-3xl font-bold text-green-600">0</p>
-                        </div>
+                        <h3 class="font-bold text-lg mb-2">${subject.name}</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">${subject.grade || 'Todos los grados'}</p>
+                        <button onclick="app.showResources('${subject.id}')" class="btn-secondary text-sm">
+                            Ver Recursos
+                        </button>
                     </div>
+                    `;
+                }).join('');
+                
+                this.loadIcons();
+            }
+
+            async loadAdminView() {
+                const isAdmin = localStorage.getItem('isAdmin') === 'true';
+                if (!isAdmin) {
+                    this.showView('home');
+                    this.showError("Acceso denegado");
+                    return;
+                }
+                
+                await this.showAdminTab('dashboard');
+            }
+
+            async showAdminTab(tabName) {
+                console.log('📋 Cambiando a tab admin:', tabName);
+                
+                // Ocultar todos los contenidos
+                document.querySelectorAll('.admin-tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                
+                // Actualizar pestañas activas
+                document.querySelectorAll('.admin-tab').forEach(tab => {
+                    tab.classList.remove('active', 'border-blue-500', 'text-blue-600');
+                    if (tab.textContent.toLowerCase().includes(tabName)) {
+                        tab.classList.add('active', 'border-blue-500', 'text-blue-600');
+                    }
+                });
+                
+                // Mostrar contenido seleccionado
+                const contentId = `admin-${tabName}`;
+                const content = document.getElementById(contentId);
+                if (content) {
+                    content.classList.remove('hidden');
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="card p-6">
-                            <h3 class="font-bold mb-4 text-lg">Publicaciones Recientes</h3>
-                            <div id="admin-recent-publications" class="space-y-4">
-                                <p class="text-gray-500 dark:text-gray-400">Cargando...</p>
+                    // Cargar datos específicos del tab
+                    switch(tabName) {
+                        case 'dashboard':
+                            await this.loadAdminDashboard();
+                            break;
+                        case 'publications':
+                            await this.loadAdminPublications();
+                            break;
+                        case 'subjects':
+                            await this.loadAdminSubjects();
+                            break;
+                    }
+                }
+            }
+
+            async loadAdminDashboard() {
+                try {
+                    if (!window.dbManager) {
+                        console.error('❌ dbManager no disponible para dashboard');
+                        return;
+                    }
+                    
+                    const stats = await window.dbManager.getStats();
+                    
+                    // Actualizar estadísticas
+                    const adminSubjects = document.getElementById('admin-total-subjects');
+                    const adminPublications = document.getElementById('admin-total-publications');
+                    
+                    if (adminSubjects) adminSubjects.textContent = stats.totalSubjects;
+                    if (adminPublications) adminPublications.textContent = stats.totalPublications;
+                    
+                    // Cargar datos recientes
+                    await Promise.all([
+                        this.loadAdminRecentPublications(),
+                        this.loadAdminRecentResources()
+                    ]);
+                    
+                } catch (error) {
+                    console.error("❌ Error cargando dashboard admin:", error);
+                }
+            }
+
+            async loadAdminRecentPublications() {
+                try {
+                    if (!window.dbManager) return;
+                    
+                    const publications = await window.dbManager.getPublications(5);
+                    const container = document.getElementById('admin-recent-publications');
+                    
+                    if (!container) return;
+                    
+                    container.innerHTML = publications.map(pub => `
+                        <div class="border-b dark:border-gray-700 pb-4 last:border-0 last:pb-0">
+                            <div class="flex justify-between items-start">
+                                <h4 class="font-semibold line-clamp-1 dark:text-white">${pub.titulo}</h4>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">${this.formatDate(pub.fecha)}</span>
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mt-1">${pub.descripcion}</p>
+                            <div class="flex items-center justify-between mt-2 text-xs">
+                                <span class="text-gray-500 dark:text-gray-400">${pub.autor || 'Colegio'}</span>
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="app.deletePublication('${pub.id}')" class="text-red-600 dark:text-red-400 hover:text-red-800">
+                                        Eliminar
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div class="card p-6">
-                            <h3 class="font-bold mb-4 text-lg">Actividad</h3>
-                            <div id="admin-recent-resources" class="space-y-4">
-                                <p class="text-gray-500 dark:text-gray-400">Sin actividad reciente</p>
-                            </div>
+                    `).join('');
+                    
+                } catch (error) {
+                    console.error("❌ Error cargando publicaciones recientes:", error);
+                }
+            }
+
+            async loadAdminRecentResources() {
+                const container = document.getElementById('admin-recent-resources');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="text-center py-8">
+                            <i data-lucide="file-text" class="w-8 h-8 text-gray-400 mx-auto mb-2"></i>
+                            <p class="text-gray-500 dark:text-gray-400">Sin actividad reciente</p>
                         </div>
-                    </div>
-                </div>
-                
-                <div id="admin-publications" class="admin-tab-content hidden">
-                    <div class="card p-6 mb-6">
-                        <h3 class="text-xl font-bold mb-4">Nueva Publicación</h3>
-                        <form id="publication-form" class="space-y-4">
-                            <div>
-                                <label class="form-label">Título</label>
-                                <input type="text" id="pub-title" class="form-input" required placeholder="Escribe el título aquí">
-                            </div>
-                            <div>
-                                <label class="form-label">Contenido</label>
-                                <textarea id="pub-content" class="form-input h-32" required placeholder="Escribe el contenido aquí"></textarea>
-                            </div>
-                            <div>
-                                <label class="form-label">Imagen (Opcional)</label>
-                                <input type="file" id="pub-image" class="form-input p-2" accept="image/*">
-                                <p class="text-sm text-gray-500 mt-1">Máximo 10MB. Formatos: JPG, PNG, GIF</p>
-                            </div>
-                            <div class="flex space-x-4">
-                                <button type="submit" class="btn-primary">
-                                    <i data-lucide="upload" class="w-4 h-4 mr-2"></i>
-                                    Publicar
+                    `;
+                    this.loadIcons();
+                }
+            }
+
+            async loadAdminPublications() {
+                try {
+                    if (!window.dbManager) return;
+                    
+                    const publications = await window.dbManager.getPublications();
+                    const container = document.getElementById('admin-publications-list');
+                    
+                    if (!container) return;
+                    
+                    container.innerHTML = publications.map(pub => `
+                        <div class="border-b dark:border-gray-700 pb-4 last:border-0 last:pb-0">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <h4 class="font-semibold">${pub.titulo}</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">${pub.descripcion}</p>
+                                </div>
+                                <button onclick="app.deletePublication('${pub.id}')" class="text-red-600 hover:text-red-800 ml-4">
+                                    <i data-lucide="trash" class="w-4 h-4"></i>
                                 </button>
-                                <button type="button" onclick="document.getElementById('publication-form').reset()" class="btn-secondary">
-                                    <i data-lucide="x" class="w-4 h-4 mr-2"></i>
-                                    Limpiar
-                                </button>
                             </div>
-                        </form>
-                    </div>
+                            <div class="text-xs text-gray-500 mt-1">
+                                ${this.formatDate(pub.fecha)} • ${pub.autor || 'Colegio'}
+                            </div>
+                        </div>
+                    `).join('');
                     
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-4">Publicaciones Existentes</h3>
-                        <div id="admin-publications-list" class="space-y-4">
-                            <p class="text-gray-500 dark:text-gray-400">Cargando publicaciones...</p>
+                    this.loadIcons();
+                    
+                } catch (error) {
+                    console.error("❌ Error cargando publicaciones admin:", error);
+                }
+            }
+
+            async loadAdminSubjects() {
+                const container = document.getElementById('admin-subjects-list');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="text-center py-8">
+                            <i data-lucide="book-open" class="w-8 h-8 text-gray-400 mx-auto mb-2"></i>
+                            <p class="text-gray-500 dark:text-gray-400">Gestión de materias próximamente</p>
                         </div>
-                    </div>
-                </div>
+                    `;
+                    this.loadIcons();
+                }
+            }
+
+            async deletePublication(id) {
+                if (!confirm("¿Estás seguro de eliminar esta publicación?")) return;
                 
-                <div id="admin-subjects" class="admin-tab-content hidden">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-4">Gestión de Materias</h3>
-                        <div id="admin-subjects-list" class="space-y-4">
-                            <p class="text-gray-500 dark:text-gray-400">No hay materias registradas. Agrega tu primera materia.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-    
-    <footer class="gradient-colegio mt-12">
-        <div class="bg-white/90 dark:bg-gray-900/90 p-6 text-center">
-            <p class="text-sm text-gray-600 dark:text-gray-400">© 2025 Colegio Ildefonso Vázquez - "Con fe hacia lo alto"</p>
-        </div>
-    </footer>
-    
-    <div id="login-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 w-full max-w-md">
-            <h3 class="text-xl font-bold mb-4">Acceso Administrativo</h3>
-            <form id="login-form" class="space-y-4">
-                <input type="email" id="login-email" class="form-input" placeholder="admin@colegio.edu" required>
-                <input type="password" id="login-password" class="form-input" placeholder="colegio2025" required>
-                <button type="submit" class="btn-primary w-full">Iniciar Sesión</button>
-                <button type="button" onclick="hideLoginModal()" class="btn-secondary w-full">Cancelar</button>
-            </form>
-        </div>
-    </div>
-    
-    <script src="supabase-config.js"></script>
-    <script src="storage.js"></script>
-    <script src="database.js"></script>
-    <script src="app.js"></script>
-    
-    <script>
+                try {
+                    if (!window.dbManager) {
+                        this.showError("Error: DatabaseManager no disponible");
+                        return;
+                    }
+                    
+                    const result = await window.dbManager.deletePublication(id);
+                    if (result.success) {
+                        this.showSuccess("Publicación eliminada");
+                        // Recargar las vistas afectadas
+                        await Promise.all([
+                            this.loadAdminPublications(),
+                            this.loadAdminDashboard(),
+                            this.loadAllPublications()
+                        ]);
+                    } else {
+                        this.showError("Error: " + result.error);
+                    }
+                } catch (error) {
+                    this.showError("Error eliminando publicación");
+                }
+            }
+
+            showSubjectResources(subjectId) {
+                alert(`Recursos de la materia ${subjectId} - Próximamente`);
+            }
+
+            showResources(subjectId) {
+                alert(`Recursos de la materia ${subjectId} - Próximamente`);
+            }
+
+            showError(message) {
+                console.error("❌ Error:", message);
+                alert("❌ " + message);
+            }
+
+            showSuccess(message) {
+                console.log("✅ Éxito:", message);
+                alert("✅ " + message);
+            }
+
+            updateSchoolInfo(info = null) {
+                // Implementar si es necesario
+            }
+        }
+
+        // ============================================
+        // INICIALIZACIÓN Y EVENTOS GLOBALES
+        // ============================================
+        
         // Funciones globales
         function showLoginModal() { 
             document.getElementById('login-modal').classList.remove('hidden'); 
@@ -290,8 +992,8 @@
             document.getElementById('login-modal').classList.add('hidden'); 
         }
         
-        // Login simplificado
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
+        // Login handler
+        document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value;
@@ -302,8 +1004,7 @@
                 
                 // Actualizar UI
                 document.getElementById('admin-btn').classList.add('hidden');
-                const logoutBtn = document.getElementById('logout-btn');
-                if (logoutBtn) logoutBtn.classList.remove('hidden');
+                document.getElementById('logout-btn').classList.remove('hidden');
                 
                 // Recargar estado de admin
                 if (window.app) {
@@ -311,14 +1012,13 @@
                     window.app.showView('admin');
                 }
                 
-                // Mostrar mensaje de éxito
                 alert('✅ ¡Bienvenido Administrador!');
             } else {
                 alert('❌ Credenciales incorrectas. Usa: admin@colegio.edu / colegio2025');
             }
         });
         
-        // Logout function
+        // Logout handler
         window.authManager = {
             logout: function() {
                 localStorage.removeItem('isAdmin');
@@ -332,27 +1032,106 @@
                 alert('✅ Sesión cerrada correctamente');
             }
         };
+        
+        // Formulario de publicación
+        document.addEventListener('DOMContentLoaded', function() {
+            const pubForm = document.getElementById('publication-form');
+            if (pubForm) {
+                pubForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const title = document.getElementById('pub-title').value;
+                    const content = document.getElementById('pub-content').value;
+                    const imageFile = document.getElementById('pub-image').files[0];
+                    
+                    if (!title || !content) {
+                        alert('❌ Por favor completa título y contenido');
+                        return;
+                    }
+                    
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 mr-2 animate-spin"></i>Publicando...';
+                    
+                    let imageUrl = '';
+                    if (imageFile) {
+                        try {
+                            console.log('📤 Subiendo imagen...');
+                            const uploadResult = await window.storageManager.uploadImage(imageFile);
+                            imageUrl = uploadResult.url;
+                            console.log('✅ Imagen subida:', imageUrl);
+                        } catch (error) {
+                            alert('❌ Error subiendo imagen: ' + error.message);
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalText;
+                            return;
+                        }
+                    }
+                    
+                    try {
+                        const result = await window.dbManager.addPublication({
+                            title: title,
+                            content: content,
+                            imageUrl: imageUrl
+                        });
+                        
+                        if (result.success) {
+                            alert('✅ Publicación creada con éxito');
+                            this.reset();
+                            
+                            // Recargar datos
+                            if (window.app) {
+                                await Promise.all([
+                                    window.app.loadAdminPublications(),
+                                    window.app.loadAdminDashboard(),
+                                    window.app.loadInitialData()
+                                ]);
+                            }
+                        } else {
+                            alert('❌ Error: ' + result.error);
+                        }
+                    } catch (error) {
+                        alert('❌ Error inesperado: ' + error.message);
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                        if (window.lucide) lucide.createIcons();
+                    }
+                });
+            }
+        });
 
-        // Inicializar cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('✅ Sistema cargado con Supabase e ImgBB');
+        // Inicializar aplicación cuando todo esté listo
+        window.addEventListener('load', function() {
+            console.log('🚀 Inicializando aplicación completa...');
             
             // Inicializar Lucide icons
             if (window.lucide && window.lucide.createIcons) {
                 lucide.createIcons();
             }
             
-            // Arreglar el problema de escritura forzando el foco
-            const inputs = document.querySelectorAll('input, textarea');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.style.backgroundColor = '';
+            // Inicializar tema
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                const icon = document.getElementById('theme-icon');
+                if (icon) icon.setAttribute('data-lucide', 'moon');
+            }
+            
+            // Crear instancia de la app
+            window.app = new ColegioApp();
+            console.log('✅ Aplicación inicializada');
+            
+            // Verificar estado después de 2 segundos
+            setTimeout(() => {
+                console.log('🔍 Estado final:', {
+                    supabaseClient: typeof window.supabaseClient,
+                    dbManager: typeof window.dbManager,
+                    storageManager: typeof window.storageManager,
+                    app: typeof window.app
                 });
-                
-                input.addEventListener('input', function() {
-                    console.log('Escribiendo en:', this.id, 'valor:', this.value);
-                });
-            });
+            }, 2000);
         });
     </script>
 </body>
