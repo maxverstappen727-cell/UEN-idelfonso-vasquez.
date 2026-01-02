@@ -1,9 +1,9 @@
 // Configuración de Supabase
-const supabaseUrl = 'https://eixyvceoedhgpxkefnws.supabase.co'; // Ejemplo: https://xyz.supabase.co
-const supabaseKey = 'sb_secret_JyTktO0wOOlBaFZi5leNcA_oResZywR';    // El código largo que empieza por eyJ...
+const supabaseUrl = 'https://eixyvceoedhgpxkefnws.supabase.co'; 
+const supabaseKey = 'sb_secret_JyTktO0wOOlBaFZi5leNcA_oResZywR';
 
-// Inicializar el cliente de Supabase
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+// CAMBIO: Usamos createClient directamente de la librería cargada en el index.html
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-// Exportar para que otros archivos lo usen
-window.supabase = supabase;
+// Exportar con un nombre claro para evitar conflictos
+window.supabase = supabaseClient;
