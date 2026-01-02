@@ -1,4 +1,3 @@
-// Clase para manejar todas las operaciones de base de datos con SUPABASE
 class DatabaseManager {
     constructor() {
         this.cache = {
@@ -8,7 +7,6 @@ class DatabaseManager {
         };
     }
 
-    // ========== MATERIAS ==========
     async getSubjects() {
         try {
             const { data, error } = await window.supabase
@@ -18,9 +16,9 @@ class DatabaseManager {
             
             if (error) throw error;
             this.cache.subjects = data;
-            return data;
+            return data || [];
         } catch (error) {
-            console.error("Error obteniendo materias:", error);
+            console.error(error);
             return [];
         }
     }
@@ -37,7 +35,6 @@ class DatabaseManager {
         }
     }
 
-    // ========== PUBLICACIONES (INTEGRADO CON IMGBB) ==========
     async getPublications() {
         try {
             const { data, error } = await window.supabase
@@ -46,9 +43,9 @@ class DatabaseManager {
                 .order('fecha', { ascending: false });
             
             if (error) throw error;
-            return data;
+            return data || [];
         } catch (error) {
-            console.error("Error obteniendo publicaciones:", error);
+            console.error(error);
             return [];
         }
     }
@@ -60,7 +57,7 @@ class DatabaseManager {
                 .insert([{
                     titulo: publication.title,
                     descripcion: publication.content,
-                    url_imagen: publication.imageUrl, // Link de ImgBB
+                    url_imagen: publication.imageUrl,
                     fecha: new Date().toISOString()
                 }]);
 
@@ -84,7 +81,10 @@ class DatabaseManager {
         }
     }
 
-    // ========== ESTADÍSTICAS ==========
+    async getSchoolInfo() {
+        return { nombre: "Colegio Ildefonso Vázquez" };
+    }
+
     async getStats() {
         try {
             const { count: sCount } = await window.supabase.from('subjects').select('*', { count: 'exact', head: true });
@@ -97,6 +97,10 @@ class DatabaseManager {
         } catch (error) {
             return { totalSubjects: 0, totalPublications: 0, totalResources: 0 };
         }
+    }
+
+    subscribeToUpdates(callback) {
+        return () => {};
     }
 }
 
