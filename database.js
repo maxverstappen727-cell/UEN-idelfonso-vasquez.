@@ -5,22 +5,25 @@ class DatabaseManager {
 
     async getSubjects() {
         try {
-            const { data, error } = await window.supabase
+            const { data, error } = await window.supabaseClient
                 .from('subjects')
                 .select('*')
-                .order('name');
-            if (error) throw error;
-            this.cache.subjects = data || [];
-            return this.cache.subjects;
+                .order('name', { ascending: true });
+            
+            if (error) {
+                console.warn("Error en subjects (probablemente tabla no existe):", error.message);
+                return [];
+            }
+            return data || [];
         } catch (error) {
-            console.error("Error obteniendo materias:", error);
+            console.warn("Error obteniendo materias:", error.message);
             return [];
         }
     }
 
     async getPublications(limit = null) {
         try {
-            let query = window.supabase
+            let query = window.supabaseClient
                 .from('publicaciones')
                 .select('*')
                 .order('fecha', { ascending: false });
@@ -28,18 +31,21 @@ class DatabaseManager {
             if (limit) query = query.limit(limit);
             
             const { data, error } = await query;
-            if (error) throw error;
-            this.cache.publications = data || [];
-            return this.cache.publications;
+            
+            if (error) {
+                console.warn("Error en publicaciones:", error.message);
+                return [];
+            }
+            return data || [];
         } catch (error) {
-            console.error("Error obteniendo publicaciones:", error);
+            console.warn("Error obteniendo publicaciones:", error.message);
             return [];
         }
     }
 
     async addPublication(publication) {
         try {
-            const { error } = await window.supabase
+            const { data, error } = await window.supabaseClient
                 .from('publicaciones')
                 .insert([{
                     titulo: publication.title,
@@ -47,19 +53,25 @@ class DatabaseManager {
                     url_imagen: publication.imageUrl || '',
                     fecha: new Date().toISOString(),
                     autor: 'Administrador'
-                }]);
+                }])
+                .select();
             
-            if (error) throw error;
-            return { success: true };
+            if (error) {
+                console.error("Error insertando publicación:", error);
+                return { success: false, error: error.message };
+            }
+            
+            console.log("Publicación agregada:", data);
+            return { success: true, data: data };
         } catch (error) {
-            console.error("Error agregando publicación:", error);
+            console.error("Error en addPublication:", error);
             return { success: false, error: error.message };
         }
     }
 
     async deletePublication(id) {
         try {
-            const { error } = await window.supabase
+            const { error } = await window.supabaseClient
                 .from('publicaciones')
                 .delete()
                 .eq('id', id);
@@ -73,17 +85,12 @@ class DatabaseManager {
 
     async getStats() {
         try {
-            const { count: subjectCount } = await window.supabase
-                .from('subjects')
-                .select('*', { count: 'exact', head: true });
-            
-            const { count: pubCount } = await window.supabase
-                .from('publicaciones')
-                .select('*', { count: 'exact', head: true });
+            const subjects = await this.getSubjects();
+            const publications = await this.getPublications();
             
             return {
-                totalSubjects: subjectCount || 0,
-                totalPublications: pubCount || 0,
+                totalSubjects: subjects.length,
+                totalPublications: publications.length,
                 totalResources: 0
             };
         } catch (error) {
